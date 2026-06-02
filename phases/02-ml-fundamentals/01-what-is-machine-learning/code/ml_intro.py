@@ -1,5 +1,8 @@
 import numpy as np
 
+# Nearest Centroid Classifier: 가장 간단한 분류 알고리즘
+# 각 클래스의 중심점(centroid)을 학습하고, 
+# 새로운 샘플을 가장 가까운 중심점의 클래스로 분류
 
 class NearestCentroid:
     def __init__(self):
@@ -13,47 +16,65 @@ class NearestCentroid:
         ])
 
     def predict(self, X):
+        # 1. 각 샘플에서 모든 중심점까지의 거리 계산 (유클리드 거리)
         distances = np.array([
             np.sqrt(((X - c) ** 2).sum(axis=1))
             for c in self.centroids
         ])
+        # 2. 가장 가까운 중심점의 인덱스 찾기 -> 해당 클래스 반환
         return self.classes[distances.argmin(axis=0)]
 
     def score(self, X, y):
+        # 정확도(accuracy): 맞춘 샘플 수 / 전체 샘플 수
         return np.mean(self.predict(X) == y)
 
 
 def generate_classification_data(n_per_class=100, n_features=2, separation=2.0, seed=42):
+    """2진 분류 데이터 생성: 두 개의 가우시안 분포"""
     rng = np.random.RandomState(seed)
+    # 두 클래스의 중심점 설정
     center_0 = np.ones(n_features) * (separation / 2)
     center_1 = np.ones(n_features) * (-separation / 2)
+    # 각 중심점 주변에서 normal distribution으로 샘플 생성
     X_class0 = rng.randn(n_per_class, n_features) + center_0
     X_class1 = rng.randn(n_per_class, n_features) + center_1
+    # 두 클래스의 데이터를 합치기
     X = np.vstack([X_class0, X_class1])
     y = np.array([0] * n_per_class + [1] * n_per_class)
+
+    # 데이터 섞기: 순서를 무작위로 변경
     shuffle_idx = rng.permutation(len(y))
     return X[shuffle_idx], y[shuffle_idx]
 
 
 def train_test_split(X, y, test_fraction=0.3, seed=42):
+    """데이터를 train과 test로 분할"""
     rng = np.random.RandomState(seed)
     n = len(y)
+    # 인덱스를 무작위로 섞기
     idx = rng.permutation(n)
+    # test_fraction (기본값 30%)를 테스트 셋으로 사용
     split = int(n * (1 - test_fraction))
     return X[idx[:split]], X[idx[split:]], y[idx[:split]], y[idx[split:]]
 
 
 def random_baseline(y_train, y_test, seed=42):
+    """랜덤 분류기: 학습 데이터의 클래스 분포에 따라 무작위로 분류"""
     rng = np.random.RandomState(seed)
+    # 학습 데이터에서 클래스 분포 계산
     classes, counts = np.unique(y_train, return_counts=True)
     probs = counts / counts.sum()
+    # 학습 분포를 따르는 무작위 예측
     preds = rng.choice(classes, size=len(y_test), p=probs)
     return np.mean(preds == y_test)
 
 
 def majority_baseline(y_train, y_test):
+    """다수결 분류기: 학습 데이터에서 가장 많은 클래스로 모두 분류"""
     values, counts = np.unique(y_train, return_counts=True)
+    # 가장 빈번한 클래스 찾기
     majority_class = values[np.argmax(counts)]
+    # 모든 테스트 샘플을 다수결 클래스로 분류
     preds = np.full(len(y_test), majority_class)
     return np.mean(preds == y_test)
 
