@@ -215,3 +215,31 @@ if __name__ == "__main__":
     demo_multiclass()
     print()
     print("All ML intro demos complete.")
+
+'''
+## Exercises
+
+1. Take any dataset (e.g., Iris, Titanic). Split it 70/15/15 into train/validation/test. Explain why you should not tune hyperparameters on the test set.
+
+테스트 결과에 맞는 결과를 내도록 하면 테스트셋에 대해서 오버피팅이 되기때문에 일반화 성능이 저하될 수 있다
+
+2. List three real-world problems. For each one, identify whether it is classification, regression, or clustering, and whether it is supervised or unsupervised.
+
+1. 강아지인지 고양이인지 분류하기
+   - 유형: 분류 (Classification)
+   - 학습: 지도학습 (Supervised) - 이미지에 강아지/고양이 라벨이 있음
+
+2. 26년도 집값 예측하기
+   - 유형: 회귀 (Regression)
+   - 학습: 지도학습 (Supervised) - 과거 집값 데이터와 실제 가격이 있음
+
+3. 1만원짜리 물건은 어떤 것에 속해있는지 분류
+   - 유형: 클러스터링 (Clustering)
+   - 학습: 비지도학습 (Unsupervised) - 물건의 카테고리 라벨 없이 유사성만으로 그룹화
+
+3. A model gets 99% accuracy on training data but 60% on test data. Diagnose the problem and list three things you would try to fix it.
+
+- 과적합 > 정규화, eaarly stop
+- 데이터 부족 > 다양성, 증강
+
+'''
